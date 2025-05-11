@@ -3,6 +3,11 @@ extends Node
 
 signal network_update()
 
+# TODO: Rewrite this entire class
+# 1. ENet (maybe all MultiplayerPeer subclasses) are aware of every connected peer indivudally, new archi should only be client-server
+# 2. Loopback shouldnt exist as client updates are always dictated by the server
+# 3. Honestly server and client maybe should be separate classes
+
 var multiplayer_peer := ENetMultiplayerPeer.new()
 var player_name : String = "P%s" % OS.get_process_id()
 
@@ -68,7 +73,7 @@ func on_player_disconnected(peer_id : int) -> void:
 	peers.erase(peer_id)
 	network_update.emit()
 
-func send_network_message(message : String, args : Array = [], recipient_id : int = -1, remote_only : bool = false) -> void:
+func send_network_message(message : String, args : Array = [], recipient_id : int = -1, remote_only : bool = true) -> void:
 	var sender_id : int = get_peer_id()
 	var timestamp : int = int(Time.get_unix_time_from_system() * 1000)
 	var msg_obj := NetworkMessage.setup(sender_id, message, args, timestamp)

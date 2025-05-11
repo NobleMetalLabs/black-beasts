@@ -1,10 +1,16 @@
-[gd_scene load_steps=4 format=3 uid="uid://dt2tmt8d1epl"]
+[gd_scene load_steps=5 format=3 uid="uid://dt2tmt8d1epl"]
 
+[ext_resource type="Script" path="res://src/GameManager.gd" id="1_hid1j"]
 [ext_resource type="Script" path="res://src/debug_panes/server_dashboard/server-basic-pane.gd" id="1_nd8yh"]
 [ext_resource type="Script" path="res://src/debug_panes/server_dashboard/server-health-pane.gd" id="2_4njqx"]
 [ext_resource type="Script" path="res://src/debug_panes/server_dashboard/server-event-pane.gd" id="3_blbjf"]
 
-[node name="root" type="Control"]
+[node name="root" type="Node"]
+
+[node name="GameManager" type="Node" parent="."]
+script = ExtResource("1_hid1j")
+
+[node name="UI" type="Control" parent="."]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -12,7 +18,7 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="HBoxContainer" type="HSplitContainer" parent="."]
+[node name="HBoxContainer" type="HSplitContainer" parent="UI"]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -20,34 +26,34 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="VSplitContainer" type="VSplitContainer" parent="HBoxContainer"]
+[node name="VSplitContainer" type="VSplitContainer" parent="UI/HBoxContainer"]
 layout_mode = 2
 size_flags_horizontal = 3
 
-[node name="Control" type="Control" parent="HBoxContainer/VSplitContainer"]
+[node name="Control" type="Control" parent="UI/HBoxContainer/VSplitContainer"]
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
 script = ExtResource("1_nd8yh")
 
-[node name="Control2" type="Control" parent="HBoxContainer/VSplitContainer"]
+[node name="Control2" type="Control" parent="UI/HBoxContainer/VSplitContainer"]
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
 script = ExtResource("2_4njqx")
 
-[node name="VSplitContainer2" type="VSplitContainer" parent="HBoxContainer"]
+[node name="VSplitContainer2" type="VSplitContainer" parent="UI/HBoxContainer"]
 layout_mode = 2
 size_flags_horizontal = 3
 split_offset = 3415
 
-[node name="Control2" type="Control" parent="HBoxContainer/VSplitContainer2"]
+[node name="Control2" type="Control" parent="UI/HBoxContainer/VSplitContainer2"]
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
 script = ExtResource("3_blbjf")
 
-[node name="Control3" type="Control" parent="HBoxContainer/VSplitContainer2"]
+[node name="Control3" type="Control" parent="UI/HBoxContainer/VSplitContainer2"]
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
