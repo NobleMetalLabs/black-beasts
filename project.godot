@@ -17,8 +17,9 @@ config/icon="res://icon.svg"
 
 [autoload]
 
-MultiplayerManager="*res://src/autoload/MultiplayerManager.gd"
 ImGuiRoot="*res://addons/imgui-godot/data/ImGuiRoot.tscn"
+MultiplayerManager="*res://src/autoload/MultiplayerManager.gd"
+GameManager="*res://src/autoload/GameManager.gd"
 
 [display]
 

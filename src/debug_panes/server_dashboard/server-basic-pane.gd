@@ -8,10 +8,7 @@ func _process(delta):
 		ImGui.Text("ImGui in")
 		ImGui.SameLine()
 		#ImGui.TextLinkOpenURLEx("Godot %s" % gdver, "https://www.godotengine.org")
-		ImGui.Text("mem %.1f KiB / peak %.1f KiB" % [
-			OS.get_static_memory_usage() / 1024.0,
-			OS.get_static_memory_peak_usage() / 1024.0])
-		ImGui.Separator()
+
 
 		# ImGui.DragFloat("myfloat", myfloat)
 		# ImGui.Text(str(myfloat[0]))

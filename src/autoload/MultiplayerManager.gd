@@ -70,7 +70,8 @@ func on_player_disconnected(peer_id : int) -> void:
 
 func send_network_message(message : String, args : Array = [], recipient_id : int = -1, remote_only : bool = false) -> void:
 	var sender_id : int = get_peer_id()
-	var msg_obj := NetworkMessage.setup(sender_id, message, args)
+	var timestamp : int = int(Time.get_unix_time_from_system() * 1000)
+	var msg_obj := NetworkMessage.setup(sender_id, message, args, timestamp)
 	var msg_dict : Dictionary = msg_obj.serialize()
 	#print("%s : Sending message %s" % [sender_id, msg_obj])
 	#print("%s : Sending message %s" % [get_peer_id(), msg_dict])
@@ -78,7 +79,9 @@ func send_network_message(message : String, args : Array = [], recipient_id : in
 	if recipient_id != -1:
 		recipients = [recipient_id]
 	for peer_id in recipients:
-		var peer_status : ENetPacketPeer.PeerState = multiplayer_peer.get_peer(peer_id).get_state()
+		var peer_obj : ENetPacketPeer = multiplayer_peer.get_peer(peer_id)
+		if peer_obj == null: continue
+		var peer_status : ENetPacketPeer.PeerState = peer_obj.get_state()
 		if peer_status != ENetPacketPeer.STATE_CONNECTED: 
 			print("%s:%s" % [peer_id, peer_status])
 			continue
@@ -91,7 +94,7 @@ func receive_network_message(bytes : PackedByteArray) -> void:
 	var msg_dict : Dictionary = bytes_to_var(bytes)
 	#print("\n%s : Handling message \n%s\n" % [get_peer_id(), JSON.stringify(msg_dict, "\t")])
 	var message : NetworkMessage = Serializeable.deserialize(msg_dict)
-	print("%s : Handling message %s" % [get_peer_id(), message])
-	received_network_message.emit(message.sender_peer_id, message.message, message.args)
+	#print("%s : Handling message %s" % [get_peer_id(), message])
+	received_network_message.emit(message.sender_peer_id, message.message, message.args, message.timestamp)
 
-signal received_network_message(sender : int, message : String, args : Array)
+signal received_network_message(sender : int, message : String, args : Array, timestamp : int)
