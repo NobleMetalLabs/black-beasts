@@ -1,6 +1,6 @@
 extends Control
 
-func _process(delta):
+func _process(_delta):
 	ImGui.SetNextWindowSize(self.get_size())
 	ImGui.SetNextWindowPos(self.global_position)
 	var window_flags = ImGui.WindowFlags_NoResize | ImGui.WindowFlags_NoCollapse | ImGui.WindowFlags_NoMove

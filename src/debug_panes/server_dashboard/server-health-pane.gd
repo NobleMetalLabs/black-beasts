@@ -1,14 +1,16 @@
 extends Control
 
+@onready var server : NetworkServer = get_tree().get_root().get_node("root")
+
 const NUM_DELAY_SAMPLES : int = 25
 var message_delays_array_per_peer : Dictionary = {}
 var message_delays_array_index_per_peer : Dictionary = {}
 var message_delays_average_per_peer : Dictionary = {}
 
 func _ready():
-	MultiplayerManager.received_network_message.connect(on_network_message)
+	server.received_network_request.connect(on_request)
 
-func on_network_message(sender_id : int, _message : String, _args : Array = [], timestamp : int = 0):
+func on_request(sender_id : int, _message : String, _args : Array = [], timestamp : int = 0):
 	if not message_delays_array_per_peer.has(sender_id):
 		var st : Array = []
 		st.resize(25)
@@ -37,7 +39,7 @@ func reaverage_delays(peer : int):
 		samples += 1
 	message_delays_average_per_peer[peer] = sum / samples
 
-func _process(delta):
+func _process(_delta):
 	ImGui.SetNextWindowSize(self.get_size())
 	ImGui.SetNextWindowPos(self.global_position)
 	var window_flags = ImGui.WindowFlags_NoResize | ImGui.WindowFlags_NoCollapse | ImGui.WindowFlags_NoMove
@@ -62,7 +64,7 @@ func _process(delta):
 		ImGui.Separator()
 		ImGui.SetNextItemOpen(true)
 		if ImGui.TreeNode("Client times"):
-			for peer : int in MultiplayerManager.peers:
+			for peer : int in server.peers:
 				if not message_delays_array_per_peer.has(peer): continue
 				var node : bool = ImGui.TreeNode(str(peer))	
 				ImGui.SameLine()

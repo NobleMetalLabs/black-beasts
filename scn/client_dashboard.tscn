@@ -1,0 +1,18 @@
+[gd_scene load_steps=3 format=3 uid="uid://bird0muecoxiq"]
+
+[ext_resource type="Script" path="res://src/autoload/NetworkClient.gd" id="1_sy06j"]
+[ext_resource type="Script" path="res://tst/test.gd" id="2_edg41"]
+
+[node name="root" type="Node"]
+script = ExtResource("1_sy06j")
+
+[node name="UI" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="test" type="Node" parent="."]
+script = ExtResource("2_edg41")

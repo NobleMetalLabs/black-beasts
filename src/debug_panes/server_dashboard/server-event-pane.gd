@@ -1,17 +1,13 @@
 extends Control
 
+@onready var server : NetworkServer = get_tree().get_root().get_node("root")
+
 func _ready():
-	MultiplayerManager.network_update.connect(on_network_update)
-	MultiplayerManager.received_network_message.connect(on_network_message)
+	server.received_network_request.connect(on_request)
 
 var message_buffer : Array[Array] = []
 
-func on_network_update():
-	message_buffer.append(["Network update."])
-	if message_buffer.size() > 10:
-		message_buffer.pop_front()
-
-func on_network_message(sender_id : int, message : String, args : Array = [], timestamp : int = 0):
+func on_request(sender_id : int, message : String, args : Array = [], timestamp : int = 0):
 	var output : Array[String] = []
 	output.append("Network message: %s" % message)
 	if args.size() > 0:
@@ -24,7 +20,7 @@ func on_network_message(sender_id : int, message : String, args : Array = [], ti
 	if message_buffer.size() > 10:
 		message_buffer.pop_front()
 
-func _process(delta):
+func _process(_delta):
 	ImGui.SetNextWindowSize(self.get_size())
 	ImGui.SetNextWindowPos(self.global_position)
 	var window_flags = ImGui.WindowFlags_NoResize | ImGui.WindowFlags_NoCollapse | ImGui.WindowFlags_NoMove

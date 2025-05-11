@@ -1,12 +1,8 @@
-#class_name MultiplayerManager
+class_name NetworkServer
 extends Node
 
-signal network_update()
-
-# TODO: Rewrite this entire class
-# 1. ENet (maybe all MultiplayerPeer subclasses) are aware of every connected peer indivudally, new archi should only be client-server
-# 2. Loopback shouldnt exist as client updates are always dictated by the server
-# 3. Honestly server and client maybe should be separate classes
+signal peer_connected(peer_id : int)
+signal peer_disconnected(peer_id : int)
 
 var multiplayer_peer := ENetMultiplayerPeer.new()
 var player_name : String = "P%s" % OS.get_process_id()
@@ -26,8 +22,6 @@ func _ready() -> void:
 			var args := Array(OS.get_cmdline_args())
 			if args.has("-server"):
 				host_lobby()
-			elif args.has("-client"):
-				join_lobby()
 	
 	auto_connect.call_deferred()
 
@@ -37,46 +31,26 @@ func _notification(what: int) -> void:
 			upnp.delete_port_mapping(PORT, "UDP")
 			upnp.delete_port_mapping(PORT, "TCP")
 
-func get_peer_id() -> int:
-	return multiplayer.get_unique_id()
-
-func is_instance_server() -> bool:
-	if multiplayer.multiplayer_peer == null: return false
-	return multiplayer.get_unique_id() == 1
+const PEER_ID : int = 1
 
 func host_lobby() -> void:
 	multiplayer_peer.create_server(PORT)
 	multiplayer.multiplayer_peer = multiplayer_peer
-	print("Server started on port %s with clientid %s" % [PORT, multiplayer.get_unique_id()])
-	network_update.emit()
-
-func join_lobby(address : String = "127.0.0.1") -> void:
-	multiplayer_peer.create_client(address, PORT)
-	multiplayer.multiplayer_peer = multiplayer_peer
-	print("Joined server with clientid %s" % [multiplayer.get_unique_id()])
-
-func exit_lobby() -> void:
-	multiplayer_peer = ENetMultiplayerPeer.new()
-	multiplayer.multiplayer_peer = null
-	print("Left server")
-	network_update.emit()
+	print("Server started on port %s" % PORT)
 
 func on_player_connected(peer_id : int) -> void:
 	print("Player %s connected" % peer_id)
 	peers.append(peer_id)
-	network_update.emit()
+	peer_connected.emit(peer_id)
 
 func on_player_disconnected(peer_id : int) -> void:
-	if peer_id == 1:
-		print("Host disconnected.")
-		return
+	print("Player %s disconnected" % peer_id)
 	peers.erase(peer_id)
-	network_update.emit()
+	peer_disconnected.emit(peer_id)
 
-func send_network_message(message : String, args : Array = [], recipient_id : int = -1, remote_only : bool = true) -> void:
-	var sender_id : int = get_peer_id()
+func send_network_response(message : String, args : Array = [], recipient_id : int = -1) -> void:
 	var timestamp : int = int(Time.get_unix_time_from_system() * 1000)
-	var msg_obj := NetworkMessage.setup(sender_id, message, args, timestamp)
+	var msg_obj := NetworkMessage.setup(PEER_ID, message, args, timestamp)
 	var msg_dict : Dictionary = msg_obj.serialize()
 	#print("%s : Sending message %s" % [sender_id, msg_obj])
 	#print("%s : Sending message %s" % [get_peer_id(), msg_dict])
@@ -91,15 +65,16 @@ func send_network_message(message : String, args : Array = [], recipient_id : in
 			print("%s:%s" % [peer_id, peer_status])
 			continue
 		rpc_id(peer_id, "receive_network_message", var_to_bytes(msg_dict))
-	if remote_only: return
-	received_network_message.emit(sender_id, message, args)
 
 @rpc("any_peer", "reliable")
-func receive_network_message(bytes : PackedByteArray) -> void:
+func receive_network_request(bytes : PackedByteArray) -> void:
 	var msg_dict : Dictionary = bytes_to_var(bytes)
 	#print("\n%s : Handling message \n%s\n" % [get_peer_id(), JSON.stringify(msg_dict, "\t")])
 	var message : NetworkMessage = Serializeable.deserialize(msg_dict)
 	#print("%s : Handling message %s" % [get_peer_id(), message])
-	received_network_message.emit(message.sender_peer_id, message.message, message.args, message.timestamp)
+	received_network_request.emit(message.sender_peer_id, message.message, message.args, message.timestamp)
 
-signal received_network_message(sender : int, message : String, args : Array, timestamp : int)
+@rpc("authority", "reliable")
+func receive_network_response() -> void: pass
+
+signal received_network_request(sender : int, message : String, args : Array, timestamp : int)
