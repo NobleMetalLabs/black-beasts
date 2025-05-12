@@ -10,7 +10,7 @@ var message_delays_average_per_peer : Dictionary = {}
 func _ready():
 	server.received_network_request.connect(on_request)
 
-func on_request(sender_id : int, _message : String, _args : Array = [], timestamp : int = 0):
+func on_request(sender_id : int, _message : String, _args : Dictionary = {}, timestamp : int = 0):
 	if not message_delays_array_per_peer.has(sender_id):
 		var st : Array = []
 		st.resize(25)

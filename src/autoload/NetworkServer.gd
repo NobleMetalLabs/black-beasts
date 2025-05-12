@@ -20,7 +20,7 @@ func _ready() -> void:
 	var auto_connect : Callable = \
 		func auto_connect() -> void:
 			var args := Array(OS.get_cmdline_args())
-			if args.has("-server"):
+			if args.has("--server"):
 				host_lobby()
 	
 	auto_connect.call_deferred()
@@ -48,7 +48,7 @@ func on_player_disconnected(peer_id : int) -> void:
 	peers.erase(peer_id)
 	peer_disconnected.emit(peer_id)
 
-func send_network_response(message : String, args : Array = [], recipient_id : int = -1) -> void:
+func send_network_response(recipient_id : int, message : String, args : Dictionary = {}) -> void:
 	var timestamp : int = int(Time.get_unix_time_from_system() * 1000)
 	var msg_obj := NetworkMessage.setup(PEER_ID, message, args, timestamp)
 	var msg_dict : Dictionary = msg_obj.serialize()
@@ -64,7 +64,8 @@ func send_network_response(message : String, args : Array = [], recipient_id : i
 		if peer_status != ENetPacketPeer.STATE_CONNECTED: 
 			print("%s:%s" % [peer_id, peer_status])
 			continue
-		rpc_id(peer_id, "receive_network_message", var_to_bytes(msg_dict))
+		rpc_id(peer_id, "receive_network_response", var_to_bytes(msg_dict))
+	sent_network_response.emit(recipient_id, message, args, timestamp)
 
 @rpc("any_peer", "reliable")
 func receive_network_request(bytes : PackedByteArray) -> void:
@@ -77,4 +78,5 @@ func receive_network_request(bytes : PackedByteArray) -> void:
 @rpc("authority", "reliable")
 func receive_network_response() -> void: pass
 
-signal received_network_request(sender : int, message : String, args : Array, timestamp : int)
+signal received_network_request(sender : int, message : String, args : Dictionary, timestamp : int)
+signal sent_network_response(recipient : int, message : String, args : Dictionary, timestamp : int)

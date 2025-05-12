@@ -27,7 +27,7 @@ func _ready() -> void:
 	var auto_connect : Callable = \
 		func auto_connect() -> void:
 			var args := Array(OS.get_cmdline_args())
-			if args.has("-client"):
+			if args.has("--client"):
 				join_lobby()
 	
 	auto_connect.call_deferred()
@@ -46,7 +46,7 @@ func exit_lobby() -> void:
 	multiplayer.multiplayer_peer = null
 	print("Left server")
 
-func send_network_request(message : String, args : Array = []) -> void:
+func send_network_request(message : String, args : Dictionary = {}) -> void:
 	var sender_id : int = get_peer_id()
 	var timestamp : int = int(Time.get_unix_time_from_system() * 1000)
 	var msg_obj := NetworkMessage.setup(sender_id, message, args, timestamp)
@@ -66,9 +66,9 @@ func receive_network_response(bytes : PackedByteArray) -> void:
 	#print("\n%s : Handling message \n%s\n" % [get_peer_id(), JSON.stringify(msg_dict, "\t")])
 	var message : NetworkMessage = Serializeable.deserialize(msg_dict)
 	#print("%s : Handling message %s" % [get_peer_id(), message])
-	received_network_response.emit(message.sender_peer_id, message.message, message.args, message.timestamp)
+	received_network_response.emit(message.message, message.args, message.timestamp)
 
 @rpc("any_peer", "reliable")
 func receive_network_request() -> void: pass
 
-signal received_network_response(message : String, args : Array, timestamp : int)
+signal received_network_response(message : String, args : Dictionary, timestamp : int)

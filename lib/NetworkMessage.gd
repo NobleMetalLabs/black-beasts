@@ -3,10 +3,10 @@ extends Serializeable
 
 var sender_peer_id : int
 var message : String
-var args : Array
+var args : Dictionary
 var timestamp : int
 
-static func setup(_sender_peer_id : int, _message : String, _args : Array, _timestamp : int) -> NetworkMessage:
+static func setup(_sender_peer_id : int, _message : String, _args : Dictionary, _timestamp : int) -> NetworkMessage:
 	var nm := NetworkMessage.new()
 	nm.sender_peer_id = _sender_peer_id
 	nm.message = _message
