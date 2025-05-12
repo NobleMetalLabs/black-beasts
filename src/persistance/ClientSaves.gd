@@ -29,27 +29,33 @@ func _notification(what: int) -> void:
 func save_participant_ids(dir : String = "res://tst/current_game/") -> void:
 	var fa = FileAccess.open("%s/%s.dat" % [dir, player_id], FileAccess.WRITE)
 	fa.store_var(Serializeable.serialize_variant(participant_id_by_game_id))
-	print("Participant ids saved.")
+	Logger.log("CLIENT, DISK", "Participant ids saved.")
 	fa.close()
 
 func load_participant_ids(dir : String = "res://tst/current_game/") -> void:
 	var fa := FileAccess.open("%s/%s.dat" % [dir, player_id], FileAccess.READ)
 	if FileAccess.get_open_error() == ERR_FILE_NOT_FOUND: 
-		print("No ids found.")
+		Logger.log("CLIENT, DISK", "No ids found.")
 		participant_id_by_game_id = {}
 		return
 	var state_dict : Dictionary = fa.get_var()
 	participant_id_by_game_id = Serializeable.deserialize(state_dict)
-	print("Loaded participant ids: %s" % [participant_id_by_game_id])
+	Logger.log("CLIENT, DISK", "Loaded participant ids: %s" % [participant_id_by_game_id])
 	fa.close()
 
 func handle_network_response(message : String, args : Dictionary, _timestamp : int) -> void:
 	match message:
 		"participant/id_request":
 			var game_id : int = args["game_id"]
+			Logger.log("CLIENT, SERVER, REQUEST", "Server requests participant id for game %s" % game_id)
 			var participant_id : int = -1
 			if participant_id_by_game_id.has(game_id):
 				participant_id = participant_id_by_game_id[game_id]
+				Logger.log("CLIENT, PROCESS", "Saved id %s retrieved" % participant_id)
+			if participant_id == -1:
+				Logger.log("CLIENT, RESPONSE", "None saved, requesting new id")
+			else:
+				Logger.log("CLIENT, RESPONSE", "Providing...")
 			client.send_network_request(
 				"participant/id_reply", {
 					"game_id" : game_id,
@@ -59,6 +65,8 @@ func handle_network_response(message : String, args : Dictionary, _timestamp : i
 		"participant/new_id_reply":
 			var game_id : int = args["game_id"]
 			var participant_id : int = args["participant_id"]
+			Logger.log("CLIENT, SERVER, RESPONSE", "Server provided new participant id %s" % participant_id)
 			participant_id_by_game_id[game_id] = participant_id
+			Logger.log("CLIENT, PROCESS", "Id recorded")
 
 	

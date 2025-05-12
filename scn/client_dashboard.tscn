@@ -1,7 +1,7 @@
 [gd_scene load_steps=3 format=3 uid="uid://bird0muecoxiq"]
 
-[ext_resource type="Script" path="res://src/autoload/NetworkClient.gd" id="1_sy06j"]
-[ext_resource type="Script" path="res://src/ClientSaves.gd" id="3_0x4u5"]
+[ext_resource type="Script" path="res://src/network/NetworkClient.gd" id="1_sy06j"]
+[ext_resource type="Script" path="res://src/persistance/ClientSaves.gd" id="3_0x4u5"]
 
 [node name="root" type="Node"]
 script = ExtResource("1_sy06j")

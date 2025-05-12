@@ -16,7 +16,7 @@ static func _get_object_variable_names(obj : Object) -> Array[String]:
 
 static func _object_to_dict(obj : Object) -> Dictionary:
 	if not obj is Serializeable: 
-		push_error("Error: Object [%s]-%s is not Serializeable." % [obj.get_script().get_global_name(), obj])
+		Logger.error("Error: Object [%s]-%s is not Serializeable." % [obj.get_script().get_global_name(), obj])
 		return {}
 	var obj_dict : Dictionary = {
 		"class_path" : obj.get_script().resource_path,

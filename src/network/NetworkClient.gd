@@ -38,24 +38,26 @@ func get_peer_id() -> int:
 func join_lobby(address : String = "127.0.0.1") -> void:
 	multiplayer_peer.create_client(address, PORT)
 	multiplayer.multiplayer_peer = multiplayer_peer
-	print("Joined server with clientid %s" % [multiplayer.get_unique_id()])
+	Logger.log("CLIENT, SERVER", "Joined server with clientid %s" % [multiplayer.get_unique_id()])
 
 func exit_lobby() -> void:
 	multiplayer_peer.disconnect_peer(get_peer_id())
 	multiplayer_peer = ENetMultiplayerPeer.new()
 	multiplayer.multiplayer_peer = null
-	print("Left server")
+	Logger.log("CLIENT, SERVER", "Left server")
 
 func send_network_request(message : String, args : Dictionary = {}) -> void:
 	var sender_id : int = get_peer_id()
 	var timestamp : int = int(Time.get_unix_time_from_system() * 1000)
 	var msg_obj := NetworkMessage.setup(sender_id, message, args, timestamp)
 	var msg_dict : Dictionary = msg_obj.serialize()
-	#print("%s : Sending message %s" % [sender_id, msg_obj])
-	#print("%s : Sending message %s" % [get_peer_id(), msg_dict])
-
+	Logger.log("CLIENT, NETWORK, %s" % sender_id, 
+		"\"%s\" w/ %s @ %s" % [
+			message, args, "::%s" % str(timestamp).right(5)
+		]
+	)
 	if not connected:
-		push_error("Can't send network request: Not connected to server")
+		Logger.error("Can't send network request: Not connected to server")
 		return
 
 	rpc_id(1, "receive_network_request", var_to_bytes(msg_dict))

@@ -1,11 +1,11 @@
 [gd_scene load_steps=7 format=3 uid="uid://dt2tmt8d1epl"]
 
 [ext_resource type="Script" path="res://src/GameServer.gd" id="1_1i0nx"]
-[ext_resource type="Script" path="res://src/GameManager.gd" id="1_hid1j"]
-[ext_resource type="Script" path="res://src/debug_panes/server_dashboard/server-basic-pane.gd" id="1_nd8yh"]
-[ext_resource type="Script" path="res://src/autoload/NetworkServer.gd" id="1_pqtg8"]
+[ext_resource type="Script" path="res://src/persistance/GameManager.gd" id="1_hid1j"]
+[ext_resource type="Script" path="res://src/network/NetworkServer.gd" id="1_pqtg8"]
 [ext_resource type="Script" path="res://src/debug_panes/server_dashboard/server-health-pane.gd" id="2_4njqx"]
 [ext_resource type="Script" path="res://src/debug_panes/server_dashboard/server-event-pane.gd" id="3_blbjf"]
+[ext_resource type="Script" path="res://src/debug_panes/server_dashboard/server-log-pane.gd" id="5_sa0qv"]
 
 [node name="root" type="Node"]
 script = ExtResource("1_pqtg8")
@@ -31,35 +31,46 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+split_offset = -460
 
 [node name="VSplitContainer" type="VSplitContainer" parent="UI/HBoxContainer"]
 layout_mode = 2
 size_flags_horizontal = 3
+split_offset = 2280
 
-[node name="Control" type="Control" parent="UI/HBoxContainer/VSplitContainer"]
-layout_mode = 2
-size_flags_horizontal = 3
-size_flags_vertical = 3
-script = ExtResource("1_nd8yh")
-
-[node name="Control2" type="Control" parent="UI/HBoxContainer/VSplitContainer"]
+[node name="Health" type="PanelContainer" parent="UI/HBoxContainer/VSplitContainer"]
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
 script = ExtResource("2_4njqx")
 
-[node name="VSplitContainer2" type="VSplitContainer" parent="UI/HBoxContainer"]
+[node name="Control" type="PanelContainer" parent="UI/HBoxContainer/VSplitContainer"]
 layout_mode = 2
 size_flags_horizontal = 3
-split_offset = 3415
+size_flags_vertical = 3
 
-[node name="Control2" type="Control" parent="UI/HBoxContainer/VSplitContainer2"]
+[node name="HBoxContainer2" type="HSplitContainer" parent="UI/HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+split_offset = -505
+
+[node name="Log" type="PanelContainer" parent="UI/HBoxContainer/HBoxContainer2"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+script = ExtResource("5_sa0qv")
+
+[node name="VSplitContainer2" type="VSplitContainer" parent="UI/HBoxContainer/HBoxContainer2"]
+layout_mode = 2
+split_offset = 1165
+
+[node name="Events" type="PanelContainer" parent="UI/HBoxContainer/HBoxContainer2/VSplitContainer2"]
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
 script = ExtResource("3_blbjf")
 
-[node name="Control3" type="Control" parent="UI/HBoxContainer/VSplitContainer2"]
+[node name="Control3" type="PanelContainer" parent="UI/HBoxContainer/HBoxContainer2/VSplitContainer2"]
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3

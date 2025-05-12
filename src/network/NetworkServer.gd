@@ -36,15 +36,15 @@ const PEER_ID : int = 1
 func host_lobby() -> void:
 	multiplayer_peer.create_server(PORT)
 	multiplayer.multiplayer_peer = multiplayer_peer
-	print("Server started on port %s" % PORT)
+	Logger.log("SERVER, INFO", "Server started on port %s" % PORT)
 
 func on_player_connected(peer_id : int) -> void:
-	print("Player %s connected" % peer_id)
+	Logger.log("SERVER", "Peer %s connected" % peer_id)
 	peers.append(peer_id)
 	peer_connected.emit(peer_id)
 
 func on_player_disconnected(peer_id : int) -> void:
-	print("Player %s disconnected" % peer_id)
+	Logger.log("SERVER", "Peer %s disconnected" % peer_id)
 	peers.erase(peer_id)
 	peer_disconnected.emit(peer_id)
 
@@ -52,8 +52,11 @@ func send_network_response(recipient_id : int, message : String, args : Dictiona
 	var timestamp : int = int(Time.get_unix_time_from_system() * 1000)
 	var msg_obj := NetworkMessage.setup(PEER_ID, message, args, timestamp)
 	var msg_dict : Dictionary = msg_obj.serialize()
-	#print("%s : Sending message %s" % [sender_id, msg_obj])
-	#print("%s : Sending message %s" % [get_peer_id(), msg_dict])
+	Logger.log("SERVER, NETWORK, CLIENT, %s" % recipient_id, 
+		"\"%s\" w/ %s @ %s" % [
+			message, args, "::%s" % str(timestamp).right(5)
+		]
+	)
 	var recipients : Array[int] = peers
 	if recipient_id != -1:
 		recipients = [recipient_id]
@@ -61,9 +64,7 @@ func send_network_response(recipient_id : int, message : String, args : Dictiona
 		var peer_obj : ENetPacketPeer = multiplayer_peer.get_peer(peer_id)
 		if peer_obj == null: continue
 		var peer_status : ENetPacketPeer.PeerState = peer_obj.get_state()
-		if peer_status != ENetPacketPeer.STATE_CONNECTED: 
-			print("%s:%s" % [peer_id, peer_status])
-			continue
+		if peer_status != ENetPacketPeer.STATE_CONNECTED: continue
 		rpc_id(peer_id, "receive_network_response", var_to_bytes(msg_dict))
 	sent_network_response.emit(recipient_id, message, args, timestamp)
 
