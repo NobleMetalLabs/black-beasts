@@ -49,11 +49,12 @@ func _process(_delta):
 		@warning_ignore("integer_division")
 		var upt_min : int = upt_sec / 60
 		upt_sec = upt_sec % 60
-		var upt_hour : int = upt_min % 60
-		upt_min = upt_min % 60
-		var upt_day : int = upt_hour % 24
 		@warning_ignore("integer_division")
-		upt_hour = upt_hour / 24
+		var upt_hour : int = upt_min / 60
+		upt_min = upt_min % 60
+		@warning_ignore("integer_division")
+		var upt_day : int = upt_hour / 24
+		upt_hour = upt_hour % 24
 		ImGui.Text("Server up-time: %d::%02d:%02d:%02d" % [
 			upt_day, upt_hour, upt_min, upt_sec]
 		)

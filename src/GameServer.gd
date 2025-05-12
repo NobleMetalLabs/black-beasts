@@ -36,12 +36,14 @@ func on_request(sender : int, message : String, args : Dictionary, _timestamp : 
 			)
 			return
 		else:
-			print("Peer %s assigned to participant %s" % [sender, args[1]])
-			peer_to_participant_id[sender] = args[1]
+			print("Peer %s assigned to participant %s" % [sender, participant_id])
+			peer_to_participant_id[sender] = participant_id
 			return
 
 func setup_new_participant(for_peer : int) -> int:
 	var partip := GameParticipant.new()
+	print("NEW PARTICIPANT %s" % partip)
 	state.game_participants_by_id[partip.id] = partip
 	peer_to_participant_id[for_peer] = partip.id
+	print(state.game_participants_by_id)
 	return partip.id

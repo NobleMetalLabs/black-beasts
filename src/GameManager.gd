@@ -25,4 +25,5 @@ func _load_game(dir : String = "res://tst/current_game/") -> void:
 	var state_dict : Dictionary = fa.get_var()
 	state = Serializeable.deserialize(state_dict)
 	print("Loaded game state: %s" % [state])
+	print(state.game_participants_by_id.values())
 	fa.close()
