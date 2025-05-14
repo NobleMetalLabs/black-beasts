@@ -1,10 +1,10 @@
-class_name GameManger
+class_name ServerSave
 extends Node
 
 var state : GameState
 
-func _ready():
-	_load_game()
+signal loaded_new_state()
+signal created_new_state()
 
 func _notification(what: int) -> void:
 	if what == NOTIFICATION_WM_CLOSE_REQUEST or what == NOTIFICATION_EXIT_TREE:
@@ -21,8 +21,10 @@ func _load_game(dir : String = "res://tst/current_game/") -> void:
 	if FileAccess.get_open_error() == ERR_FILE_NOT_FOUND: 
 		Logger.log("SERVER, DISK", "No saved game found, creating a new one.")
 		state = GameState.new()
+		created_new_state.emit()
 		return
 	var state_dict : Dictionary = fa.get_var()
 	state = Serializeable.deserialize(state_dict)
 	Logger.log("SERVER, DISK", "Loaded game state.")
+	loaded_new_state.emit()
 	fa.close()

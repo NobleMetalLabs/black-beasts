@@ -1,20 +1,15 @@
-[gd_scene load_steps=7 format=3 uid="uid://dt2tmt8d1epl"]
+[gd_scene load_steps=8 format=3 uid="uid://dt2tmt8d1epl"]
 
 [ext_resource type="Script" path="res://src/GameServer.gd" id="1_1i0nx"]
-[ext_resource type="Script" path="res://src/persistance/GameManager.gd" id="1_hid1j"]
+[ext_resource type="Script" path="res://src/persistance/ServerSave.gd" id="1_hid1j"]
 [ext_resource type="Script" path="res://src/network/NetworkServer.gd" id="1_pqtg8"]
 [ext_resource type="Script" path="res://src/debug_panes/server_dashboard/server-health-pane.gd" id="2_4njqx"]
+[ext_resource type="Script" path="res://src/debug_panes/server_dashboard/server-gamestate-pane.gd" id="3_7yhv4"]
 [ext_resource type="Script" path="res://src/debug_panes/server_dashboard/server-event-pane.gd" id="3_blbjf"]
 [ext_resource type="Script" path="res://src/debug_panes/server_dashboard/server-log-pane.gd" id="5_sa0qv"]
 
 [node name="root" type="Node"]
 script = ExtResource("1_pqtg8")
-
-[node name="GameServer" type="Node" parent="."]
-script = ExtResource("1_1i0nx")
-
-[node name="GameManager" type="Node" parent="GameServer"]
-script = ExtResource("1_hid1j")
 
 [node name="UI" type="Control" parent="."]
 layout_mode = 3
@@ -36,7 +31,7 @@ split_offset = -460
 [node name="VSplitContainer" type="VSplitContainer" parent="UI/HBoxContainer"]
 layout_mode = 2
 size_flags_horizontal = 3
-split_offset = 2280
+split_offset = -190
 
 [node name="Health" type="PanelContainer" parent="UI/HBoxContainer/VSplitContainer"]
 layout_mode = 2
@@ -44,10 +39,11 @@ size_flags_horizontal = 3
 size_flags_vertical = 3
 script = ExtResource("2_4njqx")
 
-[node name="Control" type="PanelContainer" parent="UI/HBoxContainer/VSplitContainer"]
+[node name="GameState" type="PanelContainer" parent="UI/HBoxContainer/VSplitContainer"]
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
+script = ExtResource("3_7yhv4")
 
 [node name="HBoxContainer2" type="HSplitContainer" parent="UI/HBoxContainer"]
 layout_mode = 2
@@ -74,3 +70,9 @@ script = ExtResource("3_blbjf")
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
+
+[node name="GameServer" type="Node" parent="."]
+script = ExtResource("1_1i0nx")
+
+[node name="GameManager" type="Node" parent="GameServer"]
+script = ExtResource("1_hid1j")

@@ -5,12 +5,25 @@ extends Node
 
 var peer_to_participant_id : Dictionary = {} #[int, int]
 
-var state : GameState :
-	get: return $GameManager.state
+@onready var server_save : ServerSave = $GameManager
+@onready var state : GameState :
+	get: return server_save.state
 
 func _ready():
 	server.peer_connected.connect(on_connected)
 	server.received_network_request.connect(on_request)
+	
+	server_save.created_new_state.connect(on_new_game)
+	print(2)
+	server_save._load_game()
+
+func on_new_game() -> void:
+	for i : int in range(5):
+		# Company c = new company()
+		var c : Company = Company.new()
+		c.name = "Company %s" % (i + 1)
+		state.companies.append(c)
+	Logger.log("SERVER, DATA, PROCESS", "Created 5 test companies")
 
 func on_connected(sender : int) -> void:
 	Logger.log("SERVER, CLIENT", "Client %d connected" % sender)
